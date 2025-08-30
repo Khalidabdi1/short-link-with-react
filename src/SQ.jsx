@@ -30,7 +30,7 @@ export default function SQ(){
 
 
   function handleCopy(){
-    
+    navigator.clipboard.writeText(short)
   }
 
 async function handleLink(url){
@@ -93,6 +93,7 @@ async function handleLink(url){
 
         <Button size="icon" className="size-8 mx-3" variant="secondary" onClick={(()=>{
         console.log("is copy")
+        handleCopy()
        })}>
 
        <Clipboard  />
