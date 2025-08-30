@@ -16,6 +16,11 @@ import { Button } from "@/components/ui/button"
 import { Loader2Icon } from "lucide-react"
 import { Clipboard } from 'lucide-react';
 import { useState } from "react";
+import Alerts from "./Alerts";
+import { Link2 } from 'lucide-react';
+import { ClipboardCopy } from 'lucide-react';
+
+
 
 
 
@@ -28,17 +33,26 @@ export default function SQ(){
   let [short,setShort]=useState("")
   let [textInput,setTextInput]=useState("")
 
+  let [showAlert,setShowAlert]=useState({
+    creteAlert:false,
+    copyAlert:false,
+    showINPUT:false,
+   
+  })
+
 
   function handleCopy(){
     navigator.clipboard.writeText(short)
+
+  
   }
 
 async function handleLink(url){
     console.log(url)
 
   setloading(true)
-  
-  let res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`)
+  try{
+ let res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`)
   let shorturl =await res.text()
 
   setShort(shorturl)
@@ -47,11 +61,19 @@ async function handleLink(url){
  
   setloading(false)
 
+  }catch(error){
+    console.log(error)
+  }
+  
+ 
+
 
 }
   return(
+    <>
 <div className="bg-red-600 h-screen w-screen absolute bg-transparent flex justify-center items-center ">
-    <Card className="absolute z-4 md:w-[40%]">
+
+    <Card className="absolute z-50 md:w-[40%]">
   <CardHeader>
     <CardTitle>Short links</CardTitle>
     <CardDescription>Type the link you want to shorten</CardDescription>
@@ -73,6 +95,15 @@ async function handleLink(url){
     console.log("is clikc")
     handleLink(textInput)
     
+    setShowAlert(prev=>({...prev,creteAlert:true}))
+
+    setShowAlert(prev=>({...prev,showINPUT:true}))
+
+    setTimeout(()=>{
+    setShowAlert(prev=>({...prev,creteAlert:false}))
+
+    },3000)
+    
   })}><p className="text-white" >Make</p></Button>
   </div>
 
@@ -86,28 +117,64 @@ async function handleLink(url){
     </Button>
 
 
+ {showAlert.showINPUT===true &&
  
-   
-    <div className="flex p-2 justify-center items-center">
+  <div className="flex p-2 justify-center items-center">
         <Input className=""  placeholder={short} />
 
         <Button size="icon" className="size-8 mx-3" variant="secondary" onClick={(()=>{
         console.log("is copy")
         handleCopy()
+
+        setShowAlert(prev=>({...prev,copyAlert:true}))
+
+        setTimeout(()=>{
+        setShowAlert(prev=>({...prev,copyAlert:false}))
+
+        },3000)
        })}>
 
        <Clipboard  />
 
         </Button>
        </div>
+ }
+   
+   
 
   
 
   </CardFooter>
+
+
 </Card>
+
+{showAlert.creteAlert===true &&
+
+<Alerts>
+   <Link2 />
+  <p>link</p>
+  <p>Your link has been created.</p>
+</Alerts>
+}
+
+{showAlert.copyAlert===true&&
+
+<Alerts>
+  <ClipboardCopy />
+
+  <p>copy</p>
+  <p>Link copied.</p>
+</Alerts>
+
+}
 
 
   </div>
+
+ 
+
+  </>
 
 
   )
